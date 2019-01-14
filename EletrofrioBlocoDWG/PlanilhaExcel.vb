@@ -1,12 +1,27 @@
-﻿Imports Excel = Microsoft.Office.Interop.Excel
+﻿Imports System.Runtime.InteropServices
+Imports Excel = Microsoft.Office.Interop.Excel
 Public Class PlanilhaExcel
-    Shared appXL As Excel.Application = New Excel.Application
-    Shared wbXL As Excel.Workbook = appXL.Workbooks.Open($"{My.Application.Info.DirectoryPath}\..\nome dos arquivos.xlsx")
-    Shared shXL As Excel.Worksheet = wbXL.Sheets(1)
-    Shared raXL As Excel.Range = shXL.UsedRange
-    Shared rowCount = raXL.Rows.Count
-    Shared colCount = raXL.Columns.Count
+    Shared appXL As Excel.Application = Nothing
     Public Shared Function GetDadosColetor() As List(Of Bloco)
+        appXL = New Excel.Application 'CreateObject("Excel.Application")
+        Dim wbXL As Excel.Workbook = Nothing
+        Dim shXL As Excel.Worksheet = Nothing
+        Dim raXL As Excel.Range = Nothing
+        Dim workSheetCell As Excel.Range = Nothing
+        Dim usedRange As Excel.Range = Nothing
+        Dim cells As Excel.Range = Nothing
+        Dim columns As Excel.Range = Nothing
+        wbXL = appXL.Workbooks.Open($"{My.Application.Info.DirectoryPath}\..\nome dos arquivos.xlsx")
+        shXL = wbXL.Sheets(1)
+        raXL = shXL.UsedRange
+
+        workSheetCell = shXL.Cells
+        usedRange = shXL.UsedRange
+        cells = usedRange.Cells
+        columns = cells.Columns
+        Dim rowCount = raXL.Rows.Count
+        Dim colCount = raXL.Columns.Count
+
         shXL = wbXL.ActiveSheet
         Dim listaDeBlocos As New List(Of Bloco)
         Try
@@ -23,16 +38,34 @@ Public Class PlanilhaExcel
                 cellValue = CType(raXL.Cells(i, 5), Excel.Range) 'Cells retorna oject que e convertido para Range
                 bloco.peso = cellValue.Value.ToString & "kg"
                 bloco.medidas = $"{bloco.comprimento}x{bloco.profundidade}x{bloco.altura}"
+
                 listaDeBlocos.Add(bloco)
             Next
         Finally
             'wbXL.Save()
-            raXL = Nothing
-            shXL = Nothing
-            wbXL = Nothing
+            'GC.Collect()
+            'GC.WaitForPendingFinalizers()
+            If wbXL IsNot Nothing Then
+                If columns IsNot Nothing Then Marshal.ReleaseComObject(columns)
+                If cells IsNot Nothing Then Marshal.ReleaseComObject(cells)
+                If usedRange IsNot Nothing Then Marshal.ReleaseComObject(usedRange)
+                If workSheetCell IsNot Nothing Then Marshal.ReleaseComObject(workSheetCell)
+                If shXL IsNot Nothing Then Marshal.ReleaseComObject(shXL)
+                wbXL.Close()
+                'Marshal.FinalReleaseComObject(wbXL)
+            End If
+            'raXL = Nothing
+            'shXL = Nothing
+            'wbXL = Nothing
             appXL.Quit()
-            appXL = Nothing
+            'Marshal.FinalReleaseComObject(appXL)
         End Try
         Return listaDeBlocos
     End Function
+    Public Shared Sub ExcelFinalizar()
+        GC.Collect()
+        GC.WaitForPendingFinalizers()
+        'appXL = Nothing
+        Marshal.FinalReleaseComObject(appXL)
+    End Sub
 End Class

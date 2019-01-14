@@ -17,9 +17,8 @@
         End Try
     End Function
 
-    Function _swModel() As SldWorks.ModelDoc2
-        swModel = _swApp.ActiveDoc
-        Return swModel
-    End Function
-
+    Sub FinalizarSolidWorks()
+        swApp.ExitApp()
+        swApp = Nothing
+    End Sub
 End Module

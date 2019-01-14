@@ -12,7 +12,7 @@ Module ModuleMain
 
     Sub Main()
         swApp = _swApp()
-        Dim fullPathArquivoTemplate = My.Application.Info.DirectoryPath & "\..\Draw1.SLDDRW"
+        Dim fullPathArquivoTemplate = My.Application.Info.DirectoryPath & "\..\BlocoTemplate.SLDDRW"
         'swApp.DocumentVisible(False, swDocumentTypes_e.swDocDRAWING)
         Dim desenho = swApp.OpenDoc6(fullPathArquivoTemplate, swDocumentTypes_e.swDocDRAWING, swOpenDocOptions_e.swOpenDocOptions_ReadOnly, "", erro, aviso)
         Dim tipoErroOpenDoc = CType(erro, swFileLoadError_e).ToString 'Nome do enumerador swFileLoadError_e dentro dele estão os tipos de erro
@@ -49,41 +49,42 @@ Module ModuleMain
             Dim tipoAvisoSaveAs4 = CType(erro, swFileSaveWarning_e).ToString
         Next
         MsgBox("Os arquivos já existem na pasta." & System.Environment.NewLine & listaArquivosRepetidos)
-        swApp.ExitApp()
+        FinalizarSolidWorks()
+        PlanilhaExcel.ExcelFinalizar()
     End Sub
 
     Sub AlterarDimencoes(bloco As Bloco, swmodel As ModelDoc2, swext As ModelDocExtension)
         AlteraTamanhoDaFonteDaAnnotation(0.05)
         Dim boolstatus As Boolean
-        boolstatus = swext.SelectByID2("COMPRIMENTO@Sketch5@Draw1.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
+        boolstatus = swext.SelectByID2("COMPRIMENTO@Sketch5@BlocoTemplate.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
         Dim myDimension As Dimension
         myDimension = swmodel.Parameter("COMPRIMENTO@Sketch5")
         myDimension.SystemValue = bloco.comprimento / 100
-        boolstatus = swmodel.Extension.SelectByID2("PROFUNDIDADE@Sketch5@Draw1.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
+        boolstatus = swmodel.Extension.SelectByID2("PROFUNDIDADE@Sketch5@BlocoTemplate.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
         myDimension = swmodel.Parameter("PROFUNDIDADE@Sketch5")
         myDimension.SystemValue = bloco.profundidade / 100
 
         If bloco.comprimento > ((bloco.nomeArquivo.Length + 1) * 4) Then
             Dim fator = 4.0
-            boolstatus = swmodel.Extension.SelectByID2("NOME_ARQUIVO@Sketch5@Draw1.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
+            boolstatus = swmodel.Extension.SelectByID2("NOME_ARQUIVO@Sketch5@BlocoTemplate.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
             myDimension = swmodel.Parameter("NOME_ARQUIVO@Sketch5")
             myDimension.SystemValue = CalculaComprimentoDoRetangulo(bloco.nomeArquivo, fator)
-            boolstatus = swmodel.Extension.SelectByID2("DIMENSOES@Sketch5@Draw1.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
+            boolstatus = swmodel.Extension.SelectByID2("DIMENSOES@Sketch5@BlocoTemplate.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
             myDimension = swmodel.Parameter("DIMENSOES@Sketch5")
             myDimension.SystemValue = CalculaComprimentoDoRetangulo(bloco.medidas, fator)
-            boolstatus = swmodel.Extension.SelectByID2("PESO@Sketch5@Draw1.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
+            boolstatus = swmodel.Extension.SelectByID2("PESO@Sketch5@BlocoTemplate.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
             myDimension = swmodel.Parameter("PESO@Sketch5")
             myDimension.SystemValue = CalculaComprimentoDoRetangulo(bloco.peso, fator)
             swmodel.ClearSelection2(True)
         Else
             AlteraTamanhoDaFonteDaAnnotation(0.035)
-            boolstatus = swmodel.Extension.SelectByID2("NOME_ARQUIVO@Sketch5@Draw1.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
+            boolstatus = swmodel.Extension.SelectByID2("NOME_ARQUIVO@Sketch5@BlocoTemplate.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
             myDimension = swmodel.Parameter("NOME_ARQUIVO@Sketch5")
             myDimension.SystemValue = CalculaComprimentoDoRetangulo(bloco.nomeArquivo, 2.7)
-            boolstatus = swmodel.Extension.SelectByID2("DIMENSOES@Sketch5@Draw1.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
+            boolstatus = swmodel.Extension.SelectByID2("DIMENSOES@Sketch5@BlocoTemplate.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
             myDimension = swmodel.Parameter("DIMENSOES@Sketch5")
             myDimension.SystemValue = CalculaComprimentoDoRetangulo(bloco.medidas, 2.7)
-            boolstatus = swmodel.Extension.SelectByID2("PESO@Sketch5@Draw1.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
+            boolstatus = swmodel.Extension.SelectByID2("PESO@Sketch5@BlocoTemplate.SLDDRW", "DIMENSION", 0, 0, 0, False, 0, Nothing, 0)
             myDimension = swmodel.Parameter("PESO@Sketch5")
             myDimension.SystemValue = CalculaComprimentoDoRetangulo(bloco.peso, 3.0)
             swmodel.ClearSelection2(True)
