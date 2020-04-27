@@ -11,6 +11,7 @@ Module ModuleMain
     Dim aviso As Integer
 
     Sub Main()
+        'teste
         swApp = _swApp()
         Dim fullPathArquivoTemplate = My.Application.Info.DirectoryPath & "\..\BlocoTemplate.SLDDRW"
         'swApp.DocumentVisible(False, swDocumentTypes_e.swDocDRAWING)
